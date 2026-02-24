@@ -2,6 +2,7 @@ import requests
 from dotenv import load_dotenv
 import os 
 import time
+from datetime import datetime, timezone
 
 load_dotenv()
 
@@ -36,7 +37,8 @@ def search_games(query: str):
                          """)
 
     for g in res2.json():
-        print(g["name"])
+        #print(g["name"])
+        pass
     print('==================')
 
 
@@ -48,14 +50,17 @@ def search_games(query: str):
                             & version_parent = null
                             & game_type = 0
                             & first_release_date != null
-                            & first_release_date < {int(time.time())};
+                            & first_release_date < {int(time.time())}
+                            & game_modes = (1)
+                            & game_modes !=(5);
                             limit 50;
 
                          """)
     for g in res3.json():
-        print(g["name"])
+        year = datetime.fromtimestamp(g["first_release_date"], tz=timezone.utc).year
+        print(g["name"],f"({year})")
 
 
 
 
-search_games("witcher")
+search_games("Genshin Impact")
