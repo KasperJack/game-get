@@ -37,6 +37,6 @@ def install_package(package_name: str):
         sys.exit(2)
 
     show_package_info(pkg)
-    download_package(pkg)
+    #download_package(pkg)
     
 install_package("ion-fury")
