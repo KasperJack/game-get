@@ -32,7 +32,7 @@ def load_package(package_name: str) -> Package:
             version=v["version"],
             source=v["source"],
             size_mb=float(v["size_mb"]),
-            notes=["notes"],
+            notes=v["notes"],
             downloads=downloads
 
 

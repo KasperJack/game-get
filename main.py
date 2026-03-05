@@ -22,6 +22,15 @@ def show_package_info(pkg: Package):
     print(pkg.release_year)
 
 
+def show_version_info(pkg: Package):
+    v: Version = pkg.versions[pkg.default]
+    print(v.version)
+    print(v.source)
+    print(v.size_mb)
+    
+    
+
+
 
 
 def install_package(package_name: str):
@@ -37,6 +46,7 @@ def install_package(package_name: str):
         sys.exit(2)
 
     show_package_info(pkg)
-    #download_package(pkg)
+    show_version_info(pkg)
+    download_package(pkg)
     
 install_package("ion-fury")

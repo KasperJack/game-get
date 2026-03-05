@@ -5,7 +5,7 @@ from typing import Optional
 class Download:
     type: str
     url: str
-    preferred: Optional[bool] = False
+
 
 @dataclass
 class Version:
