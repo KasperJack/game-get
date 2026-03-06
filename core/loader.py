@@ -24,13 +24,16 @@ def load_package(package_name: str) -> Package:
         raise InvalidManifestError("Invalid manifest file")
 
     #required keys
-    required_keys = ["name", "slug", "release_year","igdb_id","default","ass"]
+    required_keys = ["name", "slug", "release_year","igdb_id","default"]
     validate_keys(data, required_keys, package_name)
 
 
 
-    #default_version = data["default"]
-
+    default_version = data["default"]
+    
+    version_manifest_path = (
+        BUCKET_PATH / prefix / package_name / default_version / "manifest.json"
+    )
 
 
 
