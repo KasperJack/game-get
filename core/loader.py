@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from .models import Package, Version
-from .exceptions import PackageNotFoundError,InvalidManifestError, MissingKeyError
+from .exceptions import IndexManifestNotFoundError,InvalidIndexManifestError,MissingIndexKeyError
 
 BUCKET_PATH = Path.cwd() / "bucket"
 
@@ -14,23 +14,25 @@ def load_package(package_name: str) -> Package:
     index_file_path = BUCKET_PATH / prefix / package_name / "index.json"
 
     if not index_file_path.is_file():
-        raise PackageNotFoundError("Package not found")
+        raise IndexManifestNotFoundError(package_name)
 
 
     try:
         with open(index_file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
     except json.JSONDecodeError:
-        raise InvalidManifestError("Invalid manifest file")
+        raise InvalidIndexManifestError(package_name)
+
+
 
     #required keys
-    required_keys = ["name", "slug", "release_year","igdb_id","default"]
+    required_keys = ["name", "slug", "release_year","igdb_id","default","ass"]
     validate_keys(data, required_keys, package_name)
 
 
 
     default_version = data["default"]
-    
+
     version_manifest_path = (
         BUCKET_PATH / prefix / package_name / default_version / "manifest.json"
     )
@@ -65,4 +67,4 @@ def load_package(package_name: str) -> Package:
 def validate_keys(data: dict, required_keys: list[str], package_name: str):
     for key in required_keys:
         if key not in data:
-            raise MissingKeyError(key, package_name)
+            raise MissingIndexKeyError(key, package_name)

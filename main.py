@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from core.models import Package,Version
 
 
-from core import load_package, download_package, InvalidManifestError, PackageNotFoundError
+from core import load_package, download_package, IndexManifestNotFoundError,InvalidIndexManifestError,MissingIndexKeyError
 import sys
 
 
@@ -39,11 +39,11 @@ def install_package(package_name: str):
         # try to check of defult version is defined porpely 
         # check missing keys errors 
         pkg = load_package(package_name)
-    except PackageNotFoundError as e:
+    except IndexManifestNotFoundError as e:
         print(e)
         # suggest another packages with close name 
         sys.exit(1)
-    except InvalidManifestError as e:
+    except InvalidIndexManifestError as e:
         print(e)
         sys.exit(2)
 
@@ -51,4 +51,4 @@ def install_package(package_name: str):
     show_version_info(pkg)
     download_package(pkg)
     
-install_package("ion-fury")
+install_package("ion-furys")
