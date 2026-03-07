@@ -51,4 +51,4 @@ def install_package(package_name: str):
     show_version_info(pkg)
     download_package(pkg)
     
-install_package("ion-furys")
+install_package("ion-fury")

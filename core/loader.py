@@ -1,17 +1,20 @@
 import json
 from pathlib import Path
 from .models import Package, Version
-from .exceptions import IndexManifestNotFoundError,InvalidIndexManifestError,MissingIndexKeyError
+from .exceptions import IndexManifestNotFoundError,InvalidIndexManifestError,MissingIndexKeyError, VersionManifestNotFoundError,InvalidVersionManifestError,MissingVersionKeyError
 
 BUCKET_PATH = Path.cwd() / "bucket"
 
 
 
-def load_package(package_name: str) -> Package:
+def load_package(package_name: str, version: str | None = None) -> Package:
 
 
     prefix = package_name[:2]
-    index_file_path = BUCKET_PATH / prefix / package_name / "index.json"
+    package_path = BUCKET_PATH / prefix / package_name
+    index_file_path = package_path / "index.json"
+
+    
 
     if not index_file_path.is_file():
         raise IndexManifestNotFoundError(package_name)
@@ -19,24 +22,37 @@ def load_package(package_name: str) -> Package:
 
     try:
         with open(index_file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
+            index_data = json.load(f)
     except json.JSONDecodeError:
         raise InvalidIndexManifestError(package_name)
 
-
-
     #required keys
-    required_keys = ["name", "slug", "release_year","igdb_id","default","ass"]
-    validate_keys(data, required_keys, package_name)
+    validate_keys_index(index_data,package_name)
 
 
+    if version is None:
+        version = index_data["default"]
+    else:
+        pass
 
-    default_version = data["default"]
 
-    version_manifest_path = (
-        BUCKET_PATH / prefix / package_name / default_version / "manifest.json"
-    )
+    
 
+    version_file_path = package_path / version / "manifest.json"
+
+
+    if not version_file_path.is_file():
+        raise VersionManifestNotFoundError(package_name)
+
+
+    try:
+        with open(version_file_path, "r", encoding="utf-8") as f:
+            version_data = json.load(f)
+    except json.JSONDecodeError:
+        raise InvalidVersionManifestError(package_name)
+
+
+    validate_keys_version(version_data,package_name)
 
 
     versions = {}
@@ -64,7 +80,15 @@ def load_package(package_name: str) -> Package:
 
 
 
-def validate_keys(data: dict, required_keys: list[str], package_name: str):
+def validate_keys_index(data: dict, package_name: str):
+    required_keys = ["name", "slug", "release_year","igdb_id","default"]
     for key in required_keys:
         if key not in data:
             raise MissingIndexKeyError(key, package_name)
+        
+
+def validate_keys_version(data: dict, package_name: str):
+    required_keys = ["name", "slug", "release_year","igdb_id","default","ass"]
+    for key in required_keys:
+        if key not in data:
+            raise MissingVersionKeyError(key, package_name)
