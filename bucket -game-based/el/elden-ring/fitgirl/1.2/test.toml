@@ -1,0 +1,24 @@
+released = "2022-07-15"
+size_gb = 46.5
+prefer = "torrent"
+
+[[torrent]]
+file = "1.torrent"
+hash = "abc123..."
+
+[[direct]]
+host = "mega"
+files = ["https://mega.nz/part1", "https://mega.nz/part2"]
+hashes = ["aaa111...", "bbb222..."]
+optional = [
+    { lang = "ar", files = ["https://mega.nz/ar"], hashes = ["ccc333..."] },
+    { lang = "fr", files = ["https://mega.nz/fr"], hashes = ["ddd444..."] },
+]
+
+[[direct]]
+host = "gofile"
+files = ["https://gofile.io/part1"]
+hashes = ["aaa111..."]
+optional = [
+    { lang = "ar", files = ["https://gofile.io/ar"], hashes = ["eee555..."] },
+]
