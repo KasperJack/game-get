@@ -6,14 +6,31 @@ prefer = "torrent"
 file = "1.torrent"
 hash = "abc123..."
 
+
+[[torrent]]
+file = "2.torrent"
+hash = "abc663..."
+
+
 [[direct]]
 host = "mega"
-files = ["https://mega.nz/part1", "https://mega.nz/part2"]
-hashes = ["aaa111...", "bbb222..."]
+files = ["https://mega.nz/part1", 
+        "https://mega.nz/part2"]
+
+hashes = ["aaa111...", 
+        "bbb222..."]
+
+
+
 optional = [
     { lang = "ar", files = ["https://mega.nz/ar"], hashes = ["ccc333..."] },
     { lang = "fr", files = ["https://mega.nz/fr"], hashes = ["ddd444..."] },
 ]
+
+
+
+
+
 
 [[direct]]
 host = "gofile"
@@ -22,3 +39,129 @@ hashes = ["aaa111..."]
 optional = [
     { lang = "ar", files = ["https://gofile.io/ar"], hashes = ["eee555..."] },
 ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+name = "biggame"
+version = "1.0"
+
+[[components]]
+name = "core"
+required = true
+
+[[components.parts]]
+url = "https://providerA.com/core.part1"
+sha256 = "hash1"
+
+[[components.parts]]
+url = "https://providerA.com/core.part2"
+sha256 = "hash2"
+
+
+[[components]]
+name = "french"
+
+[[components.parts]]
+url = "https://providerA.com/fr.part1"
+sha256 = "hash3"
+
+[[components.parts]]
+url = "https://providerA.com/fr.part2"
+sha256 = "hash4"
+
+
+[[components]]
+name = "4k_textures"
+
+
+[[components.parts]]
+url = "https://providerA.com/4k.part1"
+sha256 = "hash5"
+
+[[components.parts]]
+url = "https://providerA.com/4k.part2"
+sha256 = "hash6"
+
+[[components.parts]]
+url = "https://providerA.com/4k.part3"
+sha256 = "hash7"
+
+
+
+
+
+
+
+
+
+
+
+
+released = "2022-07-15"
+size_gb = 46.5
+prefer = "torrent"
+
+[torrent]
+file = "1.torrent"
+hash = "abc123..."
+
+[[torrent.select]]
+feature = "french"
+files = ["fg-selective-french-1.bin", "fg-selective-french-2.bin"]
+
+[[torrent.select]]
+feature = "4k_textures"
+files = ["fg-selective-4k-1.bin", "fg-selective-4k-2.bin"]
+
+[[part]]
+url = "https://mega.nz/core.part1"
+sha256 = "hash1"
+
+[[part]]
+url = "https://mega.nz/core.part2"
+sha256 = "hash2"
+
+[[feature]]
+name = "french"
+
+[[feature.part]]
+url = "https://mega.nz/fr.part1"
+sha256 = "hash3"
+
+[[feature]]
+name = "4k_textures"
+
+[[feature.part]]
+url = "https://mega.nz/4k.part1"
+sha256 = "hash4"
+
+[[feature.part]]
+url = "https://mega.nz/4k.part2"
+sha256 = "hash5"
