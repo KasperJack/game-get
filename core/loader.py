@@ -2,14 +2,15 @@ import tomllib
 from pathlib import Path
 from .models import Package, Version
 from .exceptions import IndexManifestNotFoundError,InvalidIndexManifestError,MissingIndexKeyError, VersionManifestNotFoundError,InvalidVersionManifestError,MissingVersionKeyError
+from dataclasses import dataclass
+
 
 BUCKET_PATH = Path.cwd() / "bucket -game-based"
 
 
 
-def load_package(package_name: str, version: str | None = None) -> Package:
+def load_package(package_name: str, source: str | None = None, version: str | None = None, method: str | None = None) -> Package:
 
-    ## handle pacakge name in this case (package-name)
     prefix = package_name[:2]
     package_path = BUCKET_PATH / prefix / package_name
     index_file_path = package_path / "index.toml"
@@ -28,6 +29,8 @@ def load_package(package_name: str, version: str | None = None) -> Package:
 
     #required keys
     validate_keys_index(index_data,package_name)
+
+
 
 
     if version is None:
@@ -100,3 +103,30 @@ def validate_keys_version(data: dict, package_name: str):
     for key in required_keys:
         if key not in data:
             raise MissingVersionKeyError(key, package_name)
+        
+
+
+
+
+def resolve(package_path,index_data, source, version, method) -> InstallTarget:
+    if source and version:
+        if method:
+            return InstallTarget(source=source,version=version,method=method)
+        # check avalable sources pick one against the prio array 
+        return
+    
+    if source:
+        ## resolve a version and a mthod 
+        pass
+
+    if index_data["default_version"]:
+        pass
+
+
+
+
+@dataclass
+class InstallTarget:
+    source: str
+    version: str
+    method: str

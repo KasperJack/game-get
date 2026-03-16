@@ -6,29 +6,8 @@ if TYPE_CHECKING:
     from core.models import Package,Version
 
 
-from core import load_package, download_package, IndexManifestNotFoundError,InvalidIndexManifestError,MissingIndexKeyError
+from core import load_package,PackageManager, IndexManifestNotFoundError,InvalidIndexManifestError,MissingIndexKeyError
 import sys
-
-
-
-
-
-
-
-
-def show_package_info(pkg: Package):
-    print(pkg.name)
-    print(pkg.igdb_id)
-    print(pkg.release_year)
-
-
-def show_version_info(pkg: Package):
-    v: Version = pkg.versions[pkg.default]
-    print(v.version)
-    print(v.source)
-    print(v.size_mb)
-    
-    
 
 
 
@@ -47,8 +26,6 @@ def install_package(package_name: str):
         print(e)
         sys.exit(2)
 
-    #show_package_info(pkg)
-    #show_version_info(pkg)
-    #download_package(pkg)
+    pm = PackageManager()
     
 install_package("dead-cells")
