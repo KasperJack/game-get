@@ -31,6 +31,7 @@ def load_package(package_name: str, source: str | None = None, version: str | No
     validate_keys_index(index_data,package_name)
 
     # call resover here ??
+    target: InstallTarget = resolve(package_path,index_data,source,version,method)
     
 
     ## later fix all this part 
