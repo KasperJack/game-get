@@ -3,7 +3,7 @@ from pathlib import Path
 from .models import Package, Version
 from .exceptions import IndexManifestNotFoundError,InvalidIndexManifestError,MissingIndexKeyError, VersionManifestNotFoundError,InvalidVersionManifestError,MissingVersionKeyError
 from dataclasses import dataclass
-
+from typing import Any
 
 BUCKET_PATH = Path.cwd() / "bucket -game-based"
 
@@ -138,7 +138,7 @@ def resolve(package_path,index_data, source, version, method) -> InstallTarget:
         method = select_method(methods)
 
 
-
+## error no avalable sources for the package
 def get_sources(package_path: str) -> list[str]:
     package_path = Path(package_path)
 
@@ -148,6 +148,28 @@ def get_sources(package_path: str) -> list[str]:
         if p.is_dir() and p.name != "steam_builds"
     ]
 
+
+
+def auto_select_source(index_data: dict[str, Any], sources: list[str]) -> str:
+    pref_sources = ["a"]
+    default = index_data.get("default_version")
+
+    if default:
+        source, _ = default.split("/", 1) #!? 
+        return source
+    
+    for s in pref_sources:
+        if s in sources:
+            return s
+
+    return sources[0]
+
+
+
+
+
+
+## error no avalable versions for the package
 def get_versions(package_path, source)-> list[str]:
     source_path = package_path / source
     return [
