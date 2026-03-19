@@ -104,7 +104,7 @@ class MissingKeyError(LoaderError, ValidationError):
         self.manifest_type = manifest_type
 
 
-class NotFoundError(ResolutionError):
+class UserInputError(ResolutionError):
     """The user asked for something specific that doesn't exist"""
     def __init__(self, item_type: str, requested: str, available: list):
         # item_type: "source", "version", or "method"
@@ -112,7 +112,7 @@ class NotFoundError(ResolutionError):
         self.requested = requested
         self.available = available
 
-class AutoSelectError(ResolutionError):
+class PackageEmptyError(ResolutionError):
     """The user didn't specify, but the system couldn't find a default"""
     def __init__(self, item_type: str, package_name: str):
         super().__init__(f"Could not auto-select {item_type} for '{package_name}'. No valid options found.")
