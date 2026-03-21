@@ -35,8 +35,9 @@ class Loader:
 
         # call resover here ??
         #target: InstallTarget = resolve(package_path,index_data,source,version,method)
-        
-
+        print(r.target_source,r.target_version,r.target_method)
+        #return
+    
         ## later fix all this part 
         if version is None:
             version = index_data["default_version"]
@@ -132,7 +133,7 @@ class Loader:
         return available_sources
 
 
-    def get_available_versions(self, package_path: str, source: str) -> list[str]:
+    def get_available_versions(self, package_name: str ,package_path: str, source: str) -> list[str]:
         versions_path = package_path / source
 
         available_versions = [
@@ -140,11 +141,22 @@ class Loader:
     ]
 
         if len(available_versions) == 0:
-            raise PackageEmptyError("version","package_name")
+            raise PackageEmptyError(package_name,versions_path,"version")
         
         return available_versions
 
 
+    def get_available_methods(self, package_name: str ,package_path: str, source: str, version: str) -> list[str]:
+        meathods_path = package_path / source / version
+
+        available_methods = [
+        d.name for d in meathods_path.iterdir() if d.is_dir()
+    ]
+
+        if len(available_methods) == 0:
+            raise PackageEmptyError(package_name,meathods_path,"method")
+        
+        return available_methods
 
 
 
@@ -205,34 +217,5 @@ class Loader:
 
 
 
-
-
-    def auto_select_source(index_data: dict[str, Any], sources: list[str]) -> str:
-        pref_sources = ["a"]
-        default = index_data.get("default_version")
-
-        if default:
-            source, _ = default.split("/", 1) #!? 
-            return source
-        
-        for s in pref_sources:
-            if s in sources:
-                return s
-
-        return sources[0]
-
-
-
-
-
-
-    ## error no avalable versions for the package
-    def get_versions(package_path, source)-> list[str]:
-        source_path = package_path / source
-        return [
-            p.name
-            for p in source_path.iterdir()
-            if p.is_dir()
-        ]
 
 

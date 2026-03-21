@@ -8,9 +8,6 @@ l = Loader(TEST_BUCKET_PATH)
 
 
 
-try:
-    pkg = l.load("test",source="ass")
 
-except LoaderError as e:
-    print(e)
+pkg = l.load(package_name="test",source="d")
 

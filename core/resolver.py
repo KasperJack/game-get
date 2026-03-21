@@ -43,7 +43,7 @@ class resolver:
 
 
 
-        available_versions = self.loader.get_available_versions(self.package_path, self.target_version)
+        available_versions = self.loader.get_available_versions(self.package_name,self.package_path,self.target_source)
 
         if self.target_version:
             if self.target_version not in available_versions:
