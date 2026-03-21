@@ -1,13 +1,20 @@
-from pathlib import Path
+#from pathlib import Path
+
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .loader import Loader
+
 from typing import Any
-from .exceptions import UserInputError, PackageEmptyError
+from .exceptions import UserInputError
 
 
 
 class resolver:
-    def __init__(self, loader: Any, package_path: str, index_data: dict[str, Any], source: str, version: str, method: str):
+    def __init__(self, loader: Loader, package_path: str,package_name: str ,index_data: dict[str, Any], source: str, version: str, method: str):
         self.loader = loader # loader instance 
         self.package_path = package_path
+        self.package_name = package_name
         self.index_data = index_data
 
         # User input (can be None)
@@ -26,7 +33,7 @@ class resolver:
 
     def resolve(self):
 
-        available_sources = self.loader.get_available_sources(self.package_path)  
+        available_sources = self.loader.get_available_sources(self.package_name,self.package_path)  
 
         if self.target_source:
             if self.target_source not in available_sources:

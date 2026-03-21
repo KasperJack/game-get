@@ -2,11 +2,9 @@ import tomllib
 from pathlib import Path
 from .models import Package, Version
 from.resolver import resolver
-from .exceptions import MissingManifestError,InvalidManifestError,MissingKeyError
+from .exceptions import MissingManifestError,InvalidManifestError,MissingKeyError,PackageNotFoundError, PackageEmptyError
 from dataclasses import dataclass
 from typing import Any
-
-BUCKET_PATH = Path.cwd() / "bucket -game-based"
 
 
 class Loader:
@@ -28,14 +26,15 @@ class Loader:
     ) -> Package:
 
 
-        package_path = self._find_package(package_name)
+        package_path = self._find_package(package_name) ##raise package not found error 
 
-        package__index_data = self._get_package__index(package_path, package_name)
+        package__index_data = self._get_package__index(package_path, package_name) ##raise 
+        print(package__index_data)
 
-        r = resolver(self, package_path,package__index_data,source,version,method)
+        r = resolver(self, package_path,package_name,package__index_data,source,version,method)
 
         # call resover here ??
-        target: InstallTarget = resolve(package_path,index_data,source,version,method)
+        #target: InstallTarget = resolve(package_path,index_data,source,version,method)
         
 
         ## later fix all this part 
@@ -89,34 +88,36 @@ class Loader:
     def _find_package(self, package_name: str) -> str:
 
         prefix = package_name[:2]
-        package_path = BUCKET_PATH / prefix / package_name
+        package_path = self.bucket_path / prefix / package_name
         
         if package_path.is_dir():
             return package_path
         else:
-            pass
-            #Raise pacakge not found 
+            raise PackageNotFoundError
+
 
     def _get_package__index(self, package_path: str, package_name: str) -> dict[str, Any]:
         index_file_path = package_path / "index.toml"
 
         if not index_file_path.is_file():
-            raise IndexManifestNotFoundError(package_name)
+            raise MissingManifestError(package_name,package_path,"index")
 
 
         try:
             with open(index_file_path, "rb") as f:  #bytes
                 index_data = tomllib.load(f)
         except tomllib.TOMLDecodeError:
-            raise InvalidIndexManifestError(package_name)
+            raise InvalidManifestError(package_name,index_file_path,"index")
 
         #required keys
-        validate_keys_index(index_data,package_name)
+        self.validate_keys_index(index_data,index_file_path,package_name)
+        
+        return index_data
 
 
 
     ## used by resolver ?
-    def get_available_sources(self, package_path: str) -> list[str]:
+    def get_available_sources(self, package_name: str ,package_path: str) -> list[str]:
 
         package_path = Path(package_path)
         available_sources = [
@@ -126,7 +127,7 @@ class Loader:
         ]
 
         if len(available_sources) == 0:
-            raise PackageEmptyError("source","package_name")
+            raise PackageEmptyError(package_name,package_path,"source")
         
         return available_sources
 
@@ -149,15 +150,15 @@ class Loader:
 
 
 
-    def validate_keys_index(self,data: dict, package_name: str):
+    def validate_keys_index(self,data: dict, index_file_path: str, package_name: str):
         required_keys = ["name", "default_version"]
         for key in required_keys:
             if key not in data:
-                raise MissingIndexKeyError(key, package_name)
+                raise MissingKeyError(key,package_name,index_file_path,"index")
         
         ids = data.get("ids", {})
         if "igdb" not in ids:
-            raise MissingIndexKeyError("igdb", package_name)
+            raise MissingKeyError("igdb",package_name,index_file_path,"index")
             
 
 
