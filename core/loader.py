@@ -29,10 +29,11 @@ class Loader:
 
         package_path = self._find_package(package_name) ##raise package not found error 
 
-        package__index_data = self._get_package__index(package_path, package_name) ##raise 
+        package__index_data = self._get_package__index(package_path) ##raise 
+
         print(package__index_data)
 
-        r = resolver(self, package_path,package_name,package__index_data,source,version,method)
+        r = resolver(self, package_path,package__index_data,source,version,method)
 
         # call resover here ??
         #target: InstallTarget = resolve(package_path,index_data,source,version,method)
@@ -98,33 +99,34 @@ class Loader:
         package_path = self.bucket_path / prefix / package_name
         
         if package_path.is_dir():
+            self.package_name = package_name
             return package_path
         else:
             raise PackageNotFoundError
 
 
-    def _get_package__index(self, package_path: str, package_name: str) -> dict[str, Any]:
+    def _get_package__index(self, package_path: str) -> dict[str, Any]:
         index_file_path = package_path / "index.toml"
 
         if not index_file_path.is_file():
-            raise MissingManifestError(package_name,package_path,"index")
+            raise MissingManifestError(self.package_name,package_path,"index")
 
 
         try:
             with open(index_file_path, "rb") as f:  #bytes
                 index_data = tomllib.load(f)
         except tomllib.TOMLDecodeError:
-            raise InvalidManifestError(package_name,index_file_path,"index")
+            raise InvalidManifestError(self.package_name,index_file_path,"index")
 
         #required keys
-        self.validate_keys_index(index_data,index_file_path,package_name)
+        self.validate_keys_index(index_data,index_file_path)
         
         return index_data
 
 
 
     ## used by resolver ?
-    def get_available_sources(self, package_name: str ,package_path: str) -> list[str]:
+    def get_available_sources(self, package_path: str) -> list[str]:
 
         package_path = Path(package_path)
         available_sources = [
@@ -134,12 +136,12 @@ class Loader:
         ]
 
         if len(available_sources) == 0:
-            raise PackageEmptyError(package_name,package_path,"source")
+            raise PackageEmptyError(self.package_name,package_path,"source")
         
         return available_sources
 
 
-    def get_available_versions(self, package_name: str ,package_path: str, source: str) -> list[str]:
+    def get_available_versions(self, package_path: str, source: str) -> list[str]:
         versions_path = package_path / source
 
         available_versions = [
@@ -147,12 +149,12 @@ class Loader:
     ]
 
         if len(available_versions) == 0:
-            raise PackageEmptyError(package_name,versions_path,"version")
+            raise PackageEmptyError(self.package_name,versions_path,"version")
         
         return available_versions
 
 
-    def get_available_methods(self, package_name: str ,package_path: str, source: str, version: str) -> list[str]:
+    def get_available_methods(self, package_path: str, source: str, version: str) -> list[str]:
         meathods_path = package_path / source / version
 
         available_methods = [
@@ -160,7 +162,7 @@ class Loader:
     ]
 
         if len(available_methods) == 0:
-            raise PackageEmptyError(package_name,meathods_path,"method")
+            raise PackageEmptyError(self.package_name,meathods_path,"method")
         
         return available_methods
 
@@ -168,15 +170,15 @@ class Loader:
 
 
 
-    def validate_keys_index(self,data: dict, index_file_path: str, package_name: str):
+    def validate_keys_index(self,data: dict, index_file_path: str):
         required_keys = ["name", "default_version"]
         for key in required_keys:
             if key not in data:
-                raise MissingKeyError(key,package_name,index_file_path,"index")
+                raise MissingKeyError(key,self.package_name,index_file_path,"index")
         
         ids = data.get("ids", {})
         if "igdb" not in ids:
-            raise MissingKeyError("igdb",package_name,index_file_path,"index")
+            raise MissingKeyError("igdb",self.package_name,index_file_path,"index")
             
 
 
