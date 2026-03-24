@@ -57,7 +57,7 @@ class resolver:
 
 
     def auto_select_source(self, available_sources: list[str]):
-        pref_sources = ["a","b","c"]
+        pref_sources = ["fitgirl","steamrip","steamunlocked"]
 
         if len(available_sources) == 1:
             self.target_source = available_sources[0]

@@ -16,6 +16,7 @@ class Loader:
  
     def __init__(self, bucket_path: str | Path):
         self.bucket_path = Path(bucket_path)
+        self.package_name = None
 
     def load(
         self,
@@ -38,7 +39,12 @@ class Loader:
         print(r.target_source,r.target_version,r.target_method)
         #return
     
-        ## later fix all this part 
+        ## TODO: remove all this part later *
+        ## figure out where to do the version , method valibation 
+        ## build the data class that holds the resolved pacakge 
+        ## figure out how to get metadata without building a full package instance 
+        ##   
+
         if version is None:
             version = index_data["default_version"]
         else:
