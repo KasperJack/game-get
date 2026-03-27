@@ -44,7 +44,7 @@ class Loader:
         ## figure out where to do the version , method valibation 
         ## build the data class that holds the resolved pacakge 
         ## figure out how to get metadata without building a full package instance 
-        ##   
+        ##  add type checking for mainfest data 
 
         if version is None:
             version = index_data["default_version"]

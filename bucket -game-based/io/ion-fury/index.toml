@@ -1,10 +1,11 @@
 
-name = "Ion Fury"
+name = "Ion Fury"  #R
 
-default_version = "fitgirl/35"
-release_year = 2019
+preferred_s = "fitgirl" 
+
+release_year = 2019 #R
 
 [ids]
-igdb = 54844
-steam = 562860
+igdb = 54844 #R
+steam = 562860 
 gog = 2130382962

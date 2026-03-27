@@ -64,17 +64,15 @@ class resolver:
             self.target_source = available_sources[0]
             return
 
-        default = self.index_data.get("default_version")
+        default_source = self.index_data.get("preferred_s")
 
-        if default:
-            if "/" in default:
-                source = default.split("/", 1)[0] 
-                if source in available_sources:
-                    self.target_source = source
-                    return
-                else:
-                    pass 
-                    #maybe log or warn
+        if default_source:
+            if default_source in available_sources:
+                self.target_source = default_source
+                return
+            else:
+                pass 
+                #maybe log or warn
 
         for s in pref_sources:
             if s in available_sources:
@@ -92,7 +90,7 @@ class resolver:
             self.target_version = available_versions[0]
             return
 
-        default = self.index_data.get("default_version")
+        default_version = self.index_data.get("default_version")
 
         if default:
             if "/" in default:
