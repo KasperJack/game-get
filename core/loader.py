@@ -202,3 +202,4 @@ class TargetLoader(BaseLoader):
         ## build the data class that holds the resolved pacakge 
         ## figure out how to get metadata without building a full package instance 
         ##  add type checking for mainfest data 
+        ## use enums for version source and method 
