@@ -1,13 +1,13 @@
-from core import Loader
+from core import TargetLoader
 from pathlib import Path
 from core import LoaderError
 
-TEST_BUCKET_PATH = Path.cwd() / "bucket -game-based"
+TEST_BUCKET_PATH = Path.cwd() / "bucket -game-based" 
 
-l = Loader(TEST_BUCKET_PATH)
-
-
+l = TargetLoader(TEST_BUCKET_PATH,"test",source="ass",version="12")
 
 
-pkg = l.load(package_name="test",source="d")
+
+
+pkg = l.load()
 
