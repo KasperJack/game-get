@@ -3,7 +3,7 @@ from pathlib import Path
 from .models import Package, Version
 from.resolver import resolver
 from .exceptions import MissingManifestError,InvalidManifestError,MissingKeyError,PackageNotFoundError, PackageEmptyError
-from typing import Any
+from typing import Any, Callable
 from enum import Enum
 
 
@@ -58,22 +58,9 @@ class BaseLoader:
 
 
     def load_package_manifest(self) -> dict[str, Any]:
+
         package_file_path = self.package_path / ManifestType.PACKAGE.filename
-
-        if not package_file_path.is_file():
-            raise MissingManifestError(self.package_path, ManifestType.PACKAGE)
-
-
-        try:
-            with open(package_file_path, "rb") as f:  #bytes
-                manifest_data = tomllib.load(f)
-        except tomllib.TOMLDecodeError:
-            raise InvalidManifestError(package_file_path, ManifestType.PACKAGE)
-
-        #required keys
-        self.validate_keys_package(manifest_data,package_file_path)
-        
-        return manifest_data
+        return self._load_manifest(package_file_path, ManifestType.PACKAGE)
     
 
 
@@ -82,43 +69,23 @@ class BaseLoader:
     def load_registry_manifest(self, source: str) -> dict[str, Any]:
 
         registry_file_path = self.package_path / source / ManifestType.REGISTRY.filename
+        return self._load_manifest(registry_file_path, ManifestType.REGISTRY)
 
-        if not registry_file_path.is_file():
-            raise MissingManifestError(registry_file_path, ManifestType.REGISTRY)
-
-
-        try:
-            with open(registry_file_path, "rb") as f:  #bytes
-                registry_data = tomllib.load(f)
-        except tomllib.TOMLDecodeError:
-            raise InvalidManifestError(registry_file_path, ManifestType.REGISTRY)
-
-        self.validate_keys_registry(registry_data,registry_file_path) ## crate this func 
-        
-        return registry_data
 
 
 
     def load_release_manifest(self, source: str, version: str) -> dict[str, Any]:
+
         release_file_path = self.package_path / source / version / ManifestType.RELEASE.filename
+        return self._load_manifest(release_file_path, ManifestType.RELEASE)
 
-        if not release_file_path.is_file():
-            raise MissingManifestError(release_file_path,ManifestType.RELEASE)
-        
-
-        try:
-            with open(release_file_path, "rb") as f:  #bytes
-                release_data = tomllib.load(f)
-        except tomllib.TOMLDecodeError:
-            raise InvalidManifestError(release_file_path, ManifestType.RELEASE)
+    
 
 
-        self.validate_keys_release(release_data,release_file_path)
+    def load_download_manifest(self, source: str, version: str, method: str) -> dict[str, Any]:
 
-        return release_data
-
-
-
+        download_file_path = self.package_path / source / version / method / ManifestType.DOWNLOAD.filename
+        return self._load_manifest(download_file_path, ManifestType.DOWNLOAD)
 
 
 
@@ -167,9 +134,39 @@ class BaseLoader:
 
 
 
+    def _load_manifest(
+        self,
+        file_path: Path,
+        manifest_type: ManifestType,
+        #validator: Callable[[dict[str, Any], Path], None],
+    ) -> dict[str, Any]:
+        
+
+        if not file_path.is_file():
+            raise MissingManifestError(file_path, manifest_type)
+
+        try:
+            with open(file_path, "rb") as f:
+                data = tomllib.load(f)
+        except tomllib.TOMLDecodeError:
+            raise InvalidManifestError(file_path, manifest_type)
+
+        self.validate_keys(data,manifest_type)
+
+        return data
 
 
 
+    def validate_keys(self, data: dict[str, Any], manifest_type: ManifestType):
+        match manifest_type:
+            case ManifestType.PACKAGE:
+                ...
+            case ManifestType.REGISTRY:
+                ...
+            case ManifestType.RELEASE:
+                ...
+            case ManifestType.DOWNLOAD:
+                ...
 
 
 

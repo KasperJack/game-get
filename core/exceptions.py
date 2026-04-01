@@ -14,7 +14,7 @@ def _infer_package_name(path: Path) -> str:
     for i, part in enumerate(parts):
         if len(part) == 2 and i + 1 < len(parts):
             return parts[i + 1]
-
+    return "could not infer package name from path"
 
 
 class PackageManagerError(Exception): 
