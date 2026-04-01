@@ -1,9 +1,9 @@
 import tomllib
 from pathlib import Path
-from .models import Package, Version
-from.resolver import resolver
+from .models import PackageManifest
+from .resolver import resolver
 from .exceptions import MissingManifestError,InvalidManifestError,MissingKeyError,PackageNotFoundError, PackageEmptyError
-from typing import Any, Callable
+from typing import Any, Callable, cast
 from enum import Enum
 
 
@@ -19,6 +19,13 @@ class ManifestType(Enum):
     @property
     def filename(self) -> str:
         return f"{self.value}.toml"
+
+
+
+
+
+
+
 
 
 class PackageComponent(Enum):
@@ -39,12 +46,12 @@ class BaseLoader:
     def __init__(self, bucket_path: str | Path, package_name: str):
         self.bucket_path = Path(bucket_path)
         self.package_name = package_name
-        self.package_path = self.find_package(package_name)
+        self.package_path = self._find_package(package_name)
 
 
 
 
-    def find_package(self, package_name: str) -> Path:
+    def _find_package(self, package_name: str) -> Path:
 
         prefix = package_name[:2]
         package_path = self.bucket_path / prefix / package_name
@@ -151,22 +158,25 @@ class BaseLoader:
         except tomllib.TOMLDecodeError:
             raise InvalidManifestError(file_path, manifest_type)
 
-        self.validate_keys(data,manifest_type)
+        #validator(data, manifest_type)
+        self._validate_keys(data,manifest_type)
 
         return data
 
 
 
-    def validate_keys(self, data: dict[str, Any], manifest_type: ManifestType):
+    def _validate_keys(self, data: dict[str, Any], manifest_type: ManifestType):
         match manifest_type:
             case ManifestType.PACKAGE:
-                ...
+                raise NotImplementedError("package validator")
             case ManifestType.REGISTRY:
                 ...
             case ManifestType.RELEASE:
                 ...
             case ManifestType.DOWNLOAD:
                 ...
+            case _:
+                raise RuntimeError(f"unhandled manifest type: {manifest_type}")
 
 
 
@@ -232,7 +242,6 @@ class TargetLoader(BaseLoader):
         #return
         
         ## TODO: remove all this part later *
-        ## figure out where to do the version , method valibation 
         ## build the data class that holds the resolved pacakge 
         ## figure out how to get metadata without building a full package instance 
         ##  add type checking for mainfest data 

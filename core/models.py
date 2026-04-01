@@ -1,30 +1,14 @@
-from dataclasses import dataclass
-
-
-"""
-@dataclass
-class Download:
-    type: str
-    url: str
-    
-"""
+from pydantic import BaseModel #ValidationError
 
 
 
-@dataclass
-class Version:
-    id: str
-    version: str
-    source: str
-    size_mb: float
-    notes: str
-    downloads: dict[str, list[str]]
+class IdsModel(BaseModel):
+    igdb: int           # required
+    steam: int | None = None
+    gog: int | None = None
 
-
-@dataclass
-class Package:
-    name: str
-    release_year: int
-    igdb_id: int
-    default: str
-    versions: dict[str, Version]
+class PackageManifest(BaseModel):
+    name: str           # required
+    release_year: int   # required
+    preferred_source: str | None = None
+    ids: IdsModel
