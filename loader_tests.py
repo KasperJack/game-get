@@ -4,7 +4,7 @@ from core import LoaderError
 
 TEST_BUCKET_PATH = Path.cwd() / "bucket -game-based" 
 
-l = TargetLoader(TEST_BUCKET_PATH,"test",source="DS")
+l = TargetLoader(TEST_BUCKET_PATH,"test",source="CCC")
 
 
 

@@ -220,16 +220,17 @@ class TargetLoader(BaseLoader):
 
         
 
-        package__manifest = self.load_package_manifest() ##raises an error "package not found"
+        #package__manifest = self.load_package_manifest() ##raises an error "package not found"
 
 
         #r = resolver(self, package__manifest, self.source, self.version, self.method)
+
+        
         #print(r.target_source,r.target_version,r.target_method)
      
-        print(package__manifest.preferred_source)
-        
+        #print(package__manifest.ids.gog)
 
-        ## TODO: remove all this part later *
-        ## build the data class that holds the resolved pacakge 
-        ## figure out how to get metadata without building a full package instance 
-        ##  add type checking for mainfest data 
+        rm = self.load_registry_manifest(self.source)
+        print(rm.versions["2.0.0.2"])        
+
+ 

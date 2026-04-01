@@ -5,15 +5,15 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .loader import TargetLoader
+    from . models import PackageManifest
 
 
-from typing import Any # duck typing
 from .exceptions import UserInputError
 
 
 
 class resolver:
-    def __init__(self, loader: TargetLoader, package__manifest: dict[str, Any], source: str, version: str, method: str):
+    def __init__(self, loader: TargetLoader, package__manifest: PackageManifest, source: str, version: str, method: str):
         self.loader = loader # loader instance 
         self.package__manifest = package__manifest
 
@@ -91,7 +91,10 @@ class resolver:
             self.target_version = available_versions[0]
             return
 
-        default_version = self.package__manifest.get("default_version")
+        registry_manifest = self.loader.load_registry_manifest(self.target_source)
+
+        
+        default = self.package__manifest.get("default_version")
 
         if default:
             if "/" in default:
