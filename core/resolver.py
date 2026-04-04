@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .loader import TargetLoader
-    from . models import PackageManifest
+    from .models import PackageManifest, RegistryManifest
 
 
 from .exceptions import UserInputError
@@ -65,11 +65,10 @@ class resolver:
             self.target_source = available_sources[0]
             return
 
-        default_source = self.package__manifest.get("preferred_s")
 
-        if default_source:
-            if default_source in available_sources:
-                self.target_source = default_source
+        if self.package__manifest.preferred_source:
+            if self.package__manifest.preferred_source in available_sources:
+                self.target_source = self.package__manifest.preferred_source
                 return
             else:
                 pass 
@@ -94,25 +93,19 @@ class resolver:
         registry_manifest = self.loader.load_registry_manifest(self.target_source)
 
         
-        default = self.package__manifest.get("default_version")
+        if registry_manifest.preferred:
+            if registry_manifest.preferred in available_versions:
+                self.target_version = registry_manifest.preferred
+                return
+            else:
+                pass
 
-        if default:
-            if "/" in default:
-                version = default.split("/", 1)[1] 
-                if version in available_versions:
-                    self.target_version = version
-                    return
-                else:
-                    pass 
-                    #maybe log or warn
-                    self.loader.package_name
-
-
-
+        latest_ver = max(
+            registry_manifest.versions.items(),
+            key=lambda item: item[1].released
+        )[0]
+        
+        print(latest_ver)
 
 
         
-
-       
-    def get_available_methods(self):
-        pass

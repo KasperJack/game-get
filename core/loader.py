@@ -220,17 +220,17 @@ class TargetLoader(BaseLoader):
 
         
 
-        #package__manifest = self.load_package_manifest() ##raises an error "package not found"
+        package__manifest = self.load_package_manifest() ##raises an error "package not found"
 
 
-        #r = resolver(self, package__manifest, self.source, self.version, self.method)
+        r = resolver(self, package__manifest, self.source, self.version, self.method)
 
         
         #print(r.target_source,r.target_version,r.target_method)
      
         #print(package__manifest.ids.gog)
 
-        rm = self.load_registry_manifest(self.source)
-        print(rm.versions["2.0.0.2"])        
+        #rm = self.load_registry_manifest(self.source)
+        #print(rm.versions["2.0.0.2"])        
 
  
