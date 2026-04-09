@@ -1,0 +1,12 @@
+id = "release_off_16"
+source = "official"
+
+released = 2022-08-19
+version = "1.6"
+
+
+
+
+[interface.download.protocol.ass]
+flags = ["ssh", "https"]
+default = "sd"
