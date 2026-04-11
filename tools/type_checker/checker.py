@@ -1,24 +1,12 @@
 from __future__ import annotations
 import tomllib
 from pathlib import Path
-from datetime import date
-from typing import Literal, Any
-from pydantic import BaseModel
+
+from .models import Entity,Namespace,PrivateInterfaces,PublicInterfaces,BoolInterface,NamespaceRegistry
 
 
 # ─── Global Namespace Registry ────────────────────────────────────────────────
 
-class Namespace(BaseModel):
-    type: Literal["bool", "string", "enum"]
-    description: str
-    reserved_flags: list[str]
-
-
-class NamespaceRegistry(BaseModel):
-    namespaces: dict[str, Namespace]
-
-    def get(self, name: str) -> Namespace | None:
-        return self.namespaces.get(name)
 
 
 def load_namespace_registry(path: str | Path) -> NamespaceRegistry:
@@ -32,44 +20,7 @@ def load_namespace_registry(path: str | Path) -> NamespaceRegistry:
 
 # ─── Bool Interface ───────────────────────────────────────────────────────────
 
-class BoolInterface(BaseModel):
-    namespace: str              # only set on public interfaces
-    local_var: str
-    flags: list[str]
-    default: str | bool | None
-    description: str = ""       # inherited from namespace on public
 
-    @property
-    def full_path(self) -> str:
-        return f"interface.{self.namespace}.{self.local_var}"
-
-
-# ─── Interface Containers ─────────────────────────────────────────────────────
-
-class PublicInterfaces(BaseModel):
-    bool: dict[str, BoolInterface] = {}
-    # string: dict[str, StringInterface] = {}   <- coming later
-    # enum:   dict[str, EnumInterface]   = {}   <- coming later
-
-
-class PrivateInterfaces(BaseModel):
-    bool: dict[str, BoolInterface] = {}
-    # string: dict[str, StringInterface] = {}   <- coming later
-    # enum:   dict[str, EnumInterface]   = {}   <- coming later
-
-
-# ─── Entity ───────────────────────────────────────────────────────────────────
-
-class Entity(BaseModel):
-    id: str
-    source: str
-    released: date
-    version: str
-    public_interfaces:  PublicInterfaces  = PublicInterfaces()
-    private_interfaces: PrivateInterfaces = PrivateInterfaces()
-
-
-# ─── Entity Loader ────────────────────────────────────────────────────────────
 
 def load_entity(path: str | Path, registry: NamespaceRegistry) -> Entity:
     path = Path(path)
