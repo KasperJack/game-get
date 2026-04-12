@@ -1,13 +1,26 @@
 
 from datetime import date
 from typing import Literal, Any
-from pydantic import BaseModel
+from pydantic import BaseModel,ConfigDict
 
 
-class Namespace(BaseModel):
-    type: Literal["bool", "string", "enum"]
+class BoolNamespace(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    type: Literal["bool"]
     description: str
     reserved_flags: list[str]
+
+
+class EnumNamespace(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    
+    type: Literal["enum"]
+    description: str
+
+
+# union type
+Namespace = BoolNamespace | EnumNamespace
 
 
 class NamespaceRegistry(BaseModel):

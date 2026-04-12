@@ -1,0 +1,13 @@
+[namespace.download]
+type = "bool"
+description = "How to fetch the binaries"
+reserved_flags = ["ssh", "https","torrent"]
+
+[namespace]
+
+[namespace.channel]
+type = "enum"
+description = "The release stability"
+
+
+

@@ -1,5 +1,0 @@
-
-[namespace.download]
-type = "bool"
-description = "Download protocol settifdngs"
-reserved_flags = ["ssh", "https", "ftp"]
