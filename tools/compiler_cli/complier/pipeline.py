@@ -50,9 +50,11 @@ class Compiler:
     def run(self):
 
         namespace_raw = self.get_namespace_data()
-        #entities_raw = self.get_entities_data()
+        entities_raw = self.get_entities_data()
 
         checker = Checker(namespace_raw)
+
+        checker.check_entities(entities_raw)
 
 
 
@@ -81,7 +83,7 @@ class Compiler:
 
 
 
-    def get_entities_data(self) -> Any:
+    def get_entities_data(self) -> dict[Path, dict]:
 
         entities_folder = self.paths.entities_folder
         paths =  [f / "entity.toml" for f in entities_folder.iterdir() if f.is_dir()]

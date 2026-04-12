@@ -60,11 +60,21 @@ class PrivateInterfaces(BaseModel):
 
 # ─── Entity ───────────────────────────────────────────────────────────────────
 
-class Entity(BaseModel):
-    id: str
-    source: str
+
+
+class EntityMeta(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    source:   str
     released: date
-    version: str
+    version:  str
+
+
+
+
+class Entity(BaseModel):
+    id:                 str             
+    meta:               EntityMeta
     public_interfaces:  PublicInterfaces  = PublicInterfaces()
     private_interfaces: PrivateInterfaces = PrivateInterfaces()
 

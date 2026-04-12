@@ -6,6 +6,7 @@ from typing import Any
 
 from .models import (
     Entity,
+    EntityMeta,
     Namespace,
     BoolNamespace,
     EnumNamespace,
@@ -32,6 +33,8 @@ def _build_namespace(name: str, data: dict) -> BoolNamespace | EnumNamespace:
             return BoolNamespace(**data)
         case "enum":
             return EnumNamespace(**data)
+        case None:
+            raise Exception(f" namespace type not defined for {name} block'")
         case _:
             raise Exception(f"Unknown namespace type: '{data.get('type')}'")
 
@@ -45,6 +48,7 @@ class Checker:
 
         self.entities: list[Entity] = []
  
+
 
 
 
@@ -64,7 +68,45 @@ class Checker:
 
 
 
-    def load_entity(self,raw: dict[str, Any]) -> Entity:
+
+    def check_entities(self, entities: dict[Path, dict])-> list[Entity]:
+        result = []
+        for path, raw in entities.items():
+            entity = self._build_entity(path, raw)
+            result.append(entity)
+        return result
+
+
+
+
+
+    def _build_entity(self,path:Path, raw: dict[str, Any]) -> Entity:
+
+        allowed_keys = {"interface","meta"}
+        unexpected   = set(raw.keys()) - allowed_keys
+
+        if unexpected:
+            raise Exception(f"Unexpected keys in entity file: {unexpected}")
+
+
+      
+        meta_raw = raw.get("meta")
+        if meta_raw is None:
+            raise Exception(path, "Missing [meta] block") #E:  InvalidEntitySchema
+
+
+        meta = EntityMeta(**meta_raw) ##E: expect  pydatic errors 
+
+
+        #print(path.parent.name)
+
+        #folder_name = path.parent.name
+        #if folder_name != meta.id:
+        #    raise Exception(path, folder_name, meta.id) ##E: EntityIdMismatch
+
+
+
+
 
 
         public_bool:  dict[str, BoolInterface] = {}
@@ -101,7 +143,7 @@ class Checker:
                     )
                 
                 if not data:
-                    print("expected data in here ")
+                    raise Exception(f"[interface.{namespace_name}.{local_var}] is empty — expected flags and default") #E: raise InvalidEntitySchema
 
                 expected_keys = ["default","flags"]
                 for k in data:

@@ -1,0 +1,12 @@
+
+[meta]                          
+#id = "gg"
+source = "official"
+released = 2022-08-19
+version = "1.6"
+
+
+[interface.download.protocol]   
+
+
+
