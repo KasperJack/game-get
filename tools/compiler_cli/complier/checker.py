@@ -1,7 +1,15 @@
 from __future__ import annotations
-import tomllib
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+
+
+
+
+
+
 
 
 from .models import (
@@ -15,6 +23,10 @@ from .models import (
     PrivateInterfaces,
     BoolInterface,
     NamespaceRegistry,
+
+
+    BoolInterfaceBlock,
+
 )
 
 
@@ -95,8 +107,8 @@ class Checker:
             raise Exception(path, "Missing [meta] block") #E:  InvalidEntitySchema
 
 
-        meta = EntityMeta(**meta_raw) ##E: expect  pydatic errors 
-
+        #meta = EntityMeta(**meta_raw) ##E: expect  pydatic errors 
+        meta = EntityMeta.model_validate(meta_raw) #E: expect  pydatic errors
 
         #print(path.parent.name)
 
@@ -142,13 +154,35 @@ class Checker:
                         f"expected [interface.<namespace>.<local_var>] but got extra nesting"
                     )
                 
-                if not data:
-                    raise Exception(f"[interface.{namespace_name}.{local_var}] is empty — expected flags and default") #E: raise InvalidEntitySchema
+                #if not data:
+                #    raise Exception(f"[interface.{namespace_name}.{local_var}] is empty — expected flags and default") #E: raise InvalidEntitySchema
 
-                expected_keys = ["default","flags"]
-                for k in data:
-                    if k not in expected_keys:
-                        raise ValueError
+
+                bi = BoolInterfaceBlock.model_validate(data)
+
+
+                expected_required = {"flags"}
+                expected_optional = {"default"}
+
+                actual_keys = set(data.keys())
+
+                missing = expected_required - actual_keys
+                unexpected = actual_keys - (expected_required | expected_optional)
+
+                if missing:
+                    raise Exception(
+                        path,
+                        f"[interface.{namespace_name}.{local_var}] missing keys: {missing}"
+                    )
+
+                if unexpected:
+                    raise Exception(
+                        path,
+                        f"[interface.{namespace_name}.{local_var}] unexpected keys: {unexpected}"
+                    )
+
+
+
 
                 bad_flags = set(data["flags"]) - set(ns.reserved_flags)
                 if bad_flags:
@@ -156,6 +190,17 @@ class Checker:
                         f"[interface.{namespace_name}.{local_var}] uses "
                         f"undeclared flags: {bad_flags}"
                     )
+
+                match len(data["flags"]):
+                    case 0:
+                        raise Exception("no flags defined")
+                    case 1:
+                        pass
+                    case _:
+                        pass
+
+
+
 
                 public_bool[local_var] = BoolInterface(
                     namespace=namespace_name,
@@ -171,11 +216,10 @@ class Checker:
                 # coming later
                 pass
 
+        raise NotImplementedError("bop")
         return Entity(
-            id=raw["id"],
-            source=raw["source"],
-            released=raw["released"],
-            version=raw["version"],
+            id=path.parent.name,
+            meta=meta,
             public_interfaces=PublicInterfaces(bool=public_bool),
             private_interfaces=PrivateInterfaces(bool=private_bool),
         )

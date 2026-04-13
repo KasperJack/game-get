@@ -1,7 +1,7 @@
 
 from datetime import date
-from typing import Literal, Any
-from pydantic import BaseModel,ConfigDict
+from typing import Literal, Any,Union
+from pydantic import BaseModel,ConfigDict,model_validator
 
 
 class BoolNamespace(BaseModel):
@@ -80,3 +80,38 @@ class Entity(BaseModel):
 
 
 # ─── Entity Loader ────────────────────────────────────────────────────────────
+
+
+
+
+
+
+class BoolInterfaceBlock(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    flags: list[str]
+    default: Union[str, bool, None] = None
+
+    @model_validator(mode="after")
+    def validate_default(self):
+        flags = self.flags
+        default = self.default
+
+        if len(flags) == 0:
+            raise ValueError("no flags defineddd")
+
+
+        if default is None:
+            return self
+
+        if len(flags) == 1:
+            if not isinstance(default, bool):
+                raise ValueError("default must be a boolean when only one flag is defined")
+
+        else:
+            if not isinstance(default, str):
+                raise ValueError("default must be a string when multiple flags are defined")
+            if default not in flags:
+                raise ValueError("default must be one of the flags")
+
+        return self
