@@ -6,15 +6,6 @@ if TYPE_CHECKING:
 
 
 
-def _infer_release(path: Path) -> str:
-    return path.parent.name
-
-def _infer_package_name(path: Path) -> str:
-    parts = path.parts
-    for i, part in enumerate(parts):
-        if len(part) == 2 and i + 1 < len(parts):
-            return parts[i + 1]
-    return "could not infer package name from path"
 
 
 
@@ -26,18 +17,6 @@ class PackageNotFoundError(Exception):
         self.package = package_name
         self.path = path
 
-
-class NamespaceFileNotFound(Exception):
-    def __init__(self, path: Path):
-        package_name = _infer_package_name(path)
-        path_str     = f"{path.parent}\\[{path.name}] <-- missing"
-
-        super().__init__(
-            f"Namespace file not found for package '{package_name}'\n"
-            f"{path_str}"
-        )
-        self.package = package_name
-        self.path    = path
 
 
 class EntityNotFound(Exception):
@@ -53,3 +32,59 @@ class EntityNotFound(Exception):
         self.package = package_name
         self.release = release
         self.path    = path
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class BaseError(Exception):
+    def __init__(self, message: str, *, cause: Exception | None = None, **context):
+        self.message = message
+        self.context = context
+        self.cause = cause
+        super().__init__(message)
+
+    @property
+    def error_type(self):
+        return self.__class__.__name__
+
+    def __str__(self):
+        lines = [f"Error: {self.error_type}", " |"]
+
+        for k, v in self.context.items():
+            lines.append(f" | {k}: {v}")
+
+        if self.cause:
+            lines.append(f" | cause: {repr(self.cause)}")
+
+        lines.append(" |")
+        lines.append(f" | {self.message}")
+
+        return "\n".join(lines)
+
+
+
+class NamespaceFileNotFound(BaseError):
+    def __init__(self, path:str):
+        super().__init__(
+            message = "Namespace file not found",
+            path=path,
+  
+        )
+
+
+class ConfigParseError(BaseError):
+    pass
+
+class ConfigConversionError(BaseError):
+    pass

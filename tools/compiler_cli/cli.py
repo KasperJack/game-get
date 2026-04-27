@@ -14,9 +14,14 @@ def main():
     args = parser.parse_args()
 
     if args.command == "build":
+
         print(f"building {args.name}...")
-        compiler = Compiler(get_curent_working_bucket(),args.name)
-        compiler.run()
+        try:
+            compiler = Compiler(get_curent_working_bucket(),args.name)
+            compiler.run()
+        except Exception as e:
+            print(f"faild to complile pacakge {args.name}")
+            print(e)
 
 
     else:

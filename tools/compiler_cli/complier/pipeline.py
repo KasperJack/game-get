@@ -1,7 +1,7 @@
 
 from pathlib import Path
 from .errors import PackageNotFoundError
-from .parser import load_entities,load_namespace_file
+from .parser import load_namespace_file, load_releases
 
 from .checker import Checker
 from typing import Any
@@ -31,7 +31,7 @@ class PackagePaths:
     # files
     @property
     def namespace_file(self) -> Path:
-        return self.root / f"{File.NAMESPACE.value}.toml"
+        return self.root / f"{File.NAMESPACE.value}.conf"
 
 
 
@@ -49,12 +49,13 @@ class Compiler:
 
     def run(self):
 
-        #namespace_raw = self.get_namespace_data()
+        namespace_raw = self.get_namespace_data()
         #print(namespace_raw)
+        
+        releases_raw = self.get_releases_data()
 
-        entities_raw = self.get_entities_data()
-
-        #checker = Checker(namespace_raw)
+        
+        checker = Checker(namespace_raw)
 
         #checker.check_entities(entities_raw)
 
@@ -85,12 +86,12 @@ class Compiler:
 
 
 
-    def get_entities_data(self) -> dict[Path, dict]:
+    def get_releases_data(self) -> dict[Path, dict]:
 
-        entities_folder = self.paths.entities_folder
-        paths =  [f / "entity.toml" for f in entities_folder.iterdir() if f.is_dir()]
+        releases_folder = self.paths.entities_folder
+        paths =  [f / "release.conf" for f in releases_folder.iterdir() if f.is_dir()]
 
-        return load_entities(paths)
+        return load_releases(paths)
 
 
 
