@@ -1,18 +1,18 @@
 # Pact
 
-> A package manager.
+A package manager.
 
 ## Status
 
-> **The Python prototype in this repo represents an early design direction.**
-> 
-> Pact is currently being rewritten in Go. The new implementation is designed as a single self-contained binary with zero external dependencies, targeting native support for Windows first, followed by Linux.
-> 
-> Package manifests are currently written in Lua.
-> 
-> Before the package manager itself, the [CI tool](https://github.com/KasperJack/pact-tools) is being developed first. Its role is to validate, build, and publish manifests into the registry. Once the manifest format and workflow are stable, the package manager will be built on top of that foundation.
-> 
-> This repository exists mainly to preserve the [original design](./0.4.md ) and ideas behind Pact.
+**The Python prototype in this repo represents an early design direction.**
+ 
+Pact is currently being rewritten in Go. The new implementation is designed as a single self-contained binary with zero external dependencies, targeting native support for Windows first, followed by Linux.
+
+Package manifests are currently written in Lua.
+
+Before the package manager itself, the [CI tool](https://github.com/KasperJack/pact-tools) is being developed first. Its role is to validate, build, and publish manifests into the registry. Once the manifest format and workflow are stable, the package manager will be built on top of that foundation.
+
+This repository exists mainly to preserve the [original design](./0.4.md ) and ideas behind Pact.
 
 ## Goals
 
